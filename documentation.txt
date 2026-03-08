@@ -1,0 +1,64 @@
+Install dependencies
+
+sudo apt update
+sudo apt install -y build-essential git m4 scons zlib1g zlib1g-dev \
+  libprotobuf-dev protobuf-compiler libprotoc-dev libgoogle-perftools-dev \
+  python3-dev libboost-all-dev pkg-config python3-tk
+
+sudo apt install -y gcc-riscv64-linux-gnu g++-riscv64-linux-gnu
+
+Add gem5 submodule
+
+git submodule add https://github.com/gem5/gem5.git gem5
+git submodule update --init --recursive
+
+Build gem5 for RISC-V
+
+cd gem5
+scons build/RISCV/gem5.opt -j$(nproc)
+
+
+Create se script 
+mkdir -p configs
+nano configs/se_riscv_bp.py
+
+
+Run gshare example 
+
+rm -rf results/gshare_o3_cache
+mkdir -p results/gshare_o3_cache
+
+./gem5/build/RISCV/gem5.opt --outdir=results/gshare_o3_cache \
+  configs/se_riscv_bp.py \
+  --cmd=./benchmarks/hello/hello_rv_static \
+  --cpu-type=O3CPU \
+  --bp-type=GshareBP \
+  --caches --l2cache \
+  -I 1000000
+
+Run BiModeBP example 
+
+rm -rf results/bimode_o3_cache
+mkdir -p results/bimode_o3_cache
+
+./gem5/build/RISCV/gem5.opt --outdir=results/bimode_o3_cache \
+  configs/se_riscv_bp.py \
+  --cmd=./benchmarks/hello/hello_rv_static \
+  --cpu-type=O3CPU \
+  --bp-type=BiModeBP \
+  --caches --l2cache \
+  -I 1000000
+
+Run TAGE example 
+
+rm -rf results/tage_o3_cache
+mkdir -p results/tage_o3_cache
+
+./gem5/build/RISCV/gem5.opt --outdir=results/tage_o3_cache \
+  configs/se_riscv_bp.py \
+  --cmd=./benchmarks/hello/hello_rv_static \
+  --cpu-type=O3CPU \
+  --bp-type=TAGE \
+  --caches --l2cache \
+  -I 1000000
+
