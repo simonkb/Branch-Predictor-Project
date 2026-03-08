@@ -1,0 +1,4 @@
+predictor,ipc,cpi,simInsts,simTicks,hostSeconds,bp_lookups,bp_mispreds,mispred_rate,bp_lookup_stat,bp_mispred_stat,stats_path
+BiModeBP,1.91922,0.521045,10000000.0,2605223500.0,36.19,6160826.0,238361.0,0.038689779584750485,system.cpu.branchPred.condPredicted,system.cpu.branchPred.condIncorrect,results/tinymlp/BiModeBP/stats.txt
+GshareBP,1.007359,0.992695,10000001.0,4963473000.0,68.75,15542798.0,684250.0,0.04402360501629115,system.cpu.branchPred.condPredicted,system.cpu.branchPred.condIncorrect,results/tinymlp/GshareBP/stats.txt
+TAGE,3.661019,0.273148,10000003.0,1365739500.0,19.78,2702055.0,4871.0,0.0018027020175385032,system.cpu.branchPred.condPredicted,system.cpu.branchPred.condIncorrect,results/tinymlp/TAGE/stats.txt

@@ -1,0 +1,24 @@
+warn: Project script based on deprecated se.py style. This project-owned copy extends --bp-type support for branch predictors.
+Global frequency set at 1000000000000 ticks per second
+warn: No dot file generated. Please install pydot to generate the dot file and pdf.
+src/mem/dram_interface.cc:690: warn: DRAM device capacity (8192 Mbytes) does not match the address range assigned (512 Mbytes)
+src/arch/riscv/isa.cc:321: info: RVV enabled, VLEN = 256 bits, ELEN = 64 bits
+src/base/statistics.hh:279: warn: One of the stats is a legacy stat. Legacy stat is a stat that does not belong to any statistics::Group. Legacy stat is deprecated.
+src/base/stats/storage.hh:278: warn: Bucket size (4) does not divide range [1:32] into equal-sized buckets. Rounding up.
+src/base/stats/storage.hh:278: warn: Bucket size (4) does not divide range [1:8] into equal-sized buckets. Rounding up.
+system.remote_gdb: Listening for connections on port 7000
+gem5 Simulator System.  https://www.gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 version 25.1.0.0
+gem5 compiled Mar  8 2026 14:02:22
+gem5 started Mar  8 2026 21:53:18
+gem5 executing on lp100067950-Latitude-5440, pid 148790
+command line: /home/lp100067950/Downloads/Branch-Predictor-Project/gem5/build/RISCV/gem5.opt --outdir=/home/lp100067950/Downloads/Branch-Predictor-Project/results/tinymlp/TAGE /home/lp100067950/Downloads/Branch-Predictor-Project/configs/se_riscv_bp.py --cmd=/home/lp100067950/Downloads/Branch-Predictor-Project/benchmarks/tinymlp/tinymlp_rv_static --cpu-type=O3CPU --bp-type=TAGE --caches --l2cache -I 10000000
+
+**** REAL SIMULATION ****
+src/sim/syscall_emul.cc:97: warn: ignoring syscall set_robust_list(...)
+      (further warnings will be suppressed)
+src/sim/mem_state.cc:443: info: Increasing stack size by one page.
+src/sim/syscall_emul.cc:86: warn: ignoring syscall mprotect(...)
+Exiting @ tick 1365739500 because a thread reached the max instruction count
