@@ -62,3 +62,13 @@ mkdir -p results/tage_o3_cache
   --caches --l2cache \
   -I 1000000
 
+Create the tinymlp.cpp benchmark task simulating ai work load
+Add make file and 
+Build it
+
+cd benchmarks/tinymlp
+make
+file tinymlp_rv_static
+cd ../..
+
+Create script and run the experiment
