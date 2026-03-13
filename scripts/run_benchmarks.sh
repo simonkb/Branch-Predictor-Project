@@ -15,7 +15,6 @@ PREDICTORS=(
   "TAGE"
 )
 
-# Workloads (we'll add AI workloads later; hello is just a sanity test)
 WORKLOADS=(
   "tinymlp:$ROOT/benchmarks/tinymlp/tinymlp_rv_static"
 )
