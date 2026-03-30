@@ -12,13 +12,13 @@ gem5 is copyrighted software; use the --copyright option for details.
 
 gem5 version 25.1.0.0
 gem5 compiled Mar 30 2026 17:32:08
-gem5 started Mar 30 2026 17:44:56
-gem5 executing on lp100067950-Latitude-5440, pid 86659
-command line: /home/lp100067950/Downloads/Branch-Predictor-Project/build/RISCV/gem5.opt --outdir=/home/lp100067950/Downloads/Branch-Predictor-Project/results/tinymlp/GshareBP /home/lp100067950/Downloads/Branch-Predictor-Project/configs/se_riscv_bp.py --cmd=/home/lp100067950/Downloads/Branch-Predictor-Project/benchmarks/tinymlp/tinymlp_rv_static --cpu-type=O3CPU --bp-type=GshareBP --caches --l2cache -I 10000000
+gem5 started Mar 30 2026 17:45:43
+gem5 executing on lp100067950-Latitude-5440, pid 86786
+command line: /home/lp100067950/Downloads/Branch-Predictor-Project/build/RISCV/gem5.opt --outdir=/home/lp100067950/Downloads/Branch-Predictor-Project/results/tinymlp/LAP /home/lp100067950/Downloads/Branch-Predictor-Project/configs/se_riscv_bp.py --cmd=/home/lp100067950/Downloads/Branch-Predictor-Project/benchmarks/tinymlp/tinymlp_rv_static --cpu-type=O3CPU --bp-type=LAP --caches --l2cache -I 10000000
 
 **** REAL SIMULATION ****
 src/sim/syscall_emul.cc:97: warn: ignoring syscall set_robust_list(...)
       (further warnings will be suppressed)
 src/sim/mem_state.cc:443: info: Increasing stack size by one page.
 src/sim/syscall_emul.cc:86: warn: ignoring syscall mprotect(...)
-Exiting @ tick 4963473000 because a thread reached the max instruction count
+Exiting @ tick 8791031000 because a thread reached the max instruction count

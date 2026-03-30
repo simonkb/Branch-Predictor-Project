@@ -11,10 +11,10 @@ gem5 Simulator System.  https://www.gem5.org
 gem5 is copyrighted software; use the --copyright option for details.
 
 gem5 version 25.1.0.0
-gem5 compiled Mar  8 2026 14:02:22
-gem5 started Mar  8 2026 21:53:18
-gem5 executing on lp100067950-Latitude-5440, pid 148790
-command line: /home/lp100067950/Downloads/Branch-Predictor-Project/gem5/build/RISCV/gem5.opt --outdir=/home/lp100067950/Downloads/Branch-Predictor-Project/results/tinymlp/TAGE /home/lp100067950/Downloads/Branch-Predictor-Project/configs/se_riscv_bp.py --cmd=/home/lp100067950/Downloads/Branch-Predictor-Project/benchmarks/tinymlp/tinymlp_rv_static --cpu-type=O3CPU --bp-type=TAGE --caches --l2cache -I 10000000
+gem5 compiled Mar 30 2026 17:32:08
+gem5 started Mar 30 2026 17:45:30
+gem5 executing on lp100067950-Latitude-5440, pid 86726
+command line: /home/lp100067950/Downloads/Branch-Predictor-Project/build/RISCV/gem5.opt --outdir=/home/lp100067950/Downloads/Branch-Predictor-Project/results/tinymlp/TAGE /home/lp100067950/Downloads/Branch-Predictor-Project/configs/se_riscv_bp.py --cmd=/home/lp100067950/Downloads/Branch-Predictor-Project/benchmarks/tinymlp/tinymlp_rv_static --cpu-type=O3CPU --bp-type=TAGE --caches --l2cache -I 10000000
 
 **** REAL SIMULATION ****
 src/sim/syscall_emul.cc:97: warn: ignoring syscall set_robust_list(...)

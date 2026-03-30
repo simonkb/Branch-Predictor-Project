@@ -138,6 +138,12 @@ def _try_bp_cls(name: str):
     try:
         return getattr(__import__("m5.objects", fromlist=[name]), name)
     except Exception:
+        pass
+
+    try:
+        mod = __import__("m5.objects.BranchPredictor", fromlist=[name])
+        return getattr(mod, name)
+    except Exception:
         return None
 
 
@@ -148,6 +154,7 @@ BP_CLASSES = {
     "BiModeBP": _try_bp_cls("BiModeBP"),
     "TournamentBP": _try_bp_cls("TournamentBP"),
     "GshareBP": _try_bp_cls("GshareBP"),
+    "LAPBP": _try_bp_cls("LAPBP"),
     "TAGE": _try_bp_cls("TAGE"),
     "LTAGE": _try_bp_cls("LTAGE"),
     "TAGE_SC_L": _try_bp_cls("TAGE_SC_L"),
@@ -160,6 +167,7 @@ BP_CLASSES = {k: v for k, v in BP_CLASSES.items() if v is not None}
 
 def list_bp_types_and_exit():
     print("Available bp types (this script):")
+    print("  LAP")
     for k in sorted(BP_CLASSES.keys()):
         print(f"  {k}")
     sys.exit(0)
@@ -177,7 +185,7 @@ def attach_branch_predictor(cpu, bp_name: str):
     if not bp_name:
         return
 
-    if bp_name not in BP_CLASSES and bp_name != "BranchPredictor":
+    if bp_name not in BP_CLASSES and bp_name not in ("BranchPredictor", "LAP"):
         fatal(
             f"Unknown --bp-type '{bp_name}'. "
             "Use --list-bp-types to see available predictors."
@@ -189,6 +197,16 @@ def attach_branch_predictor(cpu, bp_name: str):
         # Make it functional by providing a default conditional predictor
         if "LocalBP" in BP_CLASSES:
             bpu.conditionalBranchPred = BP_CLASSES["LocalBP"]()
+        cpu.branchPred = bpu
+        return
+
+    # Alias: LAP is a project-facing name that maps to gem5's LAPBP
+    if bp_name == "LAP":
+        if "LAPBP" not in BP_CLASSES:
+            fatal("LAP selected but LAPBP was not found in this gem5 build.")
+        cond = BP_CLASSES["LAPBP"]()
+        bpu = BranchPredictor()
+        bpu.conditionalBranchPred = cond
         cpu.branchPred = bpu
         return
 

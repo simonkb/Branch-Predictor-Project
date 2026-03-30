@@ -5,7 +5,7 @@ set -euo pipefail
 # Run from project root (directory containing gem5/, configs/, benchmarks/)
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-GEM5="$ROOT/gem5/build/RISCV/gem5.opt"
+GEM5="$ROOT/build/RISCV/gem5.opt"
 CFG="$ROOT/configs/se_riscv_bp.py"
 
 # Predictors (your current setup)
@@ -13,6 +13,7 @@ PREDICTORS=(
   "BiModeBP"
   "GshareBP"
   "TAGE"
+  "LAP"
 )
 
 WORKLOADS=(
