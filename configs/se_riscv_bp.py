@@ -153,6 +153,7 @@ BP_CLASSES = {
     "TAGE_SC_L": _try_bp_cls("TAGE_SC_L"),
     "TAGE_SC_L_8KB": _try_bp_cls("TAGE_SC_L_8KB"),
     "TAGE_SC_L_64KB": _try_bp_cls("TAGE_SC_L_64KB"),
+    "LAPBP": _try_bp_cls("LAPBP"),
 }
 # Filter out any missing classes (defensive)
 BP_CLASSES = {k: v for k, v in BP_CLASSES.items() if v is not None}
@@ -177,7 +178,7 @@ def attach_branch_predictor(cpu, bp_name: str):
     if not bp_name:
         return
 
-    if bp_name not in BP_CLASSES and bp_name != "BranchPredictor":
+    if bp_name not in BP_CLASSES and bp_name not in ("BranchPredictor", "LAP"):
         fatal(
             f"Unknown --bp-type '{bp_name}'. "
             "Use --list-bp-types to see available predictors."
@@ -189,6 +190,17 @@ def attach_branch_predictor(cpu, bp_name: str):
         # Make it functional by providing a default conditional predictor
         if "LocalBP" in BP_CLASSES:
             bpu.conditionalBranchPred = BP_CLASSES["LocalBP"]()
+        cpu.branchPred = bpu
+        return
+
+    # LAP alias → LAPBP (our loop-aware predictor)
+    if bp_name == "LAP":
+        if "LAPBP" not in BP_CLASSES:
+            fatal("LAP selected but LAPBP was not found in this gem5 build.")
+        cond = BP_CLASSES["LAPBP"]()
+        bpu = BranchPredictor()
+        bpu.instShiftAmt = 2  # RISC-V is 4-byte aligned; shift out always-zero bits
+        bpu.conditionalBranchPred = cond
         cpu.branchPred = bpu
         return
 
