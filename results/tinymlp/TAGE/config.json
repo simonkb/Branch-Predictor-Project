@@ -41,7 +41,7 @@
                 "app_path": "/proc",
                 "eventq_index": 0,
                 "host_paths": [
-                    "/home/lp100067950/Downloads/Branch-Predictor-Project/results/tinymlp/TAGE/fs/proc"
+                    "results/tinymlp/TAGE/fs/proc"
                 ]
             },
             {
@@ -52,7 +52,7 @@
                 "app_path": "/sys",
                 "eventq_index": 0,
                 "host_paths": [
-                    "/home/lp100067950/Downloads/Branch-Predictor-Project/results/tinymlp/TAGE/fs/sys"
+                    "results/tinymlp/TAGE/fs/sys"
                 ]
             },
             {
@@ -63,7 +63,7 @@
                 "app_path": "/tmp",
                 "eventq_index": 0,
                 "host_paths": [
-                    "/home/lp100067950/Downloads/Branch-Predictor-Project/results/tinymlp/TAGE/fs/tmp"
+                    "results/tinymlp/TAGE/fs/tmp"
                 ]
             }
         ],
@@ -1742,16 +1742,16 @@
                         "name": "workload",
                         "path": "system.cpu.workload",
                         "cmd": [
-                            "/home/lp100067950/Downloads/Branch-Predictor-Project/benchmarks/tinymlp/tinymlp_rv_static"
+                            "./benchmarks/tinymlp/tinymlp_rv_static"
                         ],
-                        "cwd": "/home/lp100067950/Downloads/Branch-Predictor-Project",
+                        "cwd": "/home/winner/Branch-Predictor-Project",
                         "drivers": [],
                         "egid": 100,
                         "env": [],
                         "errout": "cerr",
                         "euid": 100,
                         "eventq_index": 0,
-                        "executable": "/home/lp100067950/Downloads/Branch-Predictor-Project/benchmarks/tinymlp/tinymlp_rv_static",
+                        "executable": "./benchmarks/tinymlp/tinymlp_rv_static",
                         "gid": 1000,
                         "input": "cin",
                         "kvmInSE": false,

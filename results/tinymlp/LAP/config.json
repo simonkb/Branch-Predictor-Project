@@ -41,7 +41,7 @@
                 "app_path": "/proc",
                 "eventq_index": 0,
                 "host_paths": [
-                    "results/tinymlp/BiModeBP/fs/proc"
+                    "results/tinymlp/LAP/fs/proc"
                 ]
             },
             {
@@ -52,7 +52,7 @@
                 "app_path": "/sys",
                 "eventq_index": 0,
                 "host_paths": [
-                    "results/tinymlp/BiModeBP/fs/sys"
+                    "results/tinymlp/LAP/fs/sys"
                 ]
             },
             {
@@ -63,7 +63,7 @@
                 "app_path": "/tmp",
                 "eventq_index": 0,
                 "host_paths": [
-                    "results/tinymlp/BiModeBP/fs/tmp"
+                    "results/tinymlp/LAP/fs/tmp"
                 ]
             }
         ],
@@ -154,7 +154,7 @@
                             "eventq_index": 0,
                             "numThreads": 1,
                             "num_entries": 4096,
-                            "set_shift": 0,
+                            "set_shift": 2,
                             "tag_bits": 16
                         },
                         "btbReplPolicy": {
@@ -166,7 +166,7 @@
                         },
                         "clk_domain": "system.cpu_clk_domain",
                         "eventq_index": 0,
-                        "instShiftAmt": 0,
+                        "instShiftAmt": 2,
                         "numEntries": 4096,
                         "numThreads": 1,
                         "power_model": [],
@@ -186,16 +186,35 @@
                         "tagBits": 16
                     },
                     "conditionalBranchPred": {
-                        "type": "BiModeBP",
-                        "cxx_class": "gem5::branch_prediction::BiModeBP",
+                        "type": "LAPBP",
+                        "cxx_class": "gem5::branch_prediction::LAPBP",
                         "name": "conditionalBranchPred",
                         "path": "system.cpu.branchPred.conditionalBranchPred",
-                        "choiceCtrBits": 2,
-                        "choicePredictorSize": 8192,
+                        "baseCtrBits": 2,
+                        "basePredictorSize": 2048,
                         "eventq_index": 0,
-                        "globalCtrBits": 2,
-                        "globalPredictorSize": 8192,
-                        "instShiftAmt": 0,
+                        "instShiftAmt": 2,
+                        "loop_predictor": {
+                            "type": "LoopPredictor",
+                            "cxx_class": "gem5::branch_prediction::LoopPredictor",
+                            "name": "loop_predictor",
+                            "path": "system.cpu.branchPred.conditionalBranchPred.loop_predictor",
+                            "eventq_index": 0,
+                            "initialLoopAge": 255,
+                            "initialLoopIter": 1,
+                            "logLoopTableAssoc": 2,
+                            "logSizeLoopPred": 8,
+                            "loopTableAgeBits": 8,
+                            "loopTableConfidenceBits": 2,
+                            "loopTableIterBits": 14,
+                            "loopTableTagBits": 14,
+                            "optionalAgeReset": true,
+                            "restrictAllocation": false,
+                            "useDirectionBit": false,
+                            "useHashing": false,
+                            "useSpeculation": false,
+                            "withLoopBits": 7
+                        },
                         "numThreads": 1,
                         "speculativeHistUpdate": true
                     },
@@ -213,11 +232,11 @@
                         "indirectSets": 256,
                         "indirectTagSize": 16,
                         "indirectWays": 2,
-                        "instShiftAmt": 0,
+                        "instShiftAmt": 2,
                         "numThreads": 1,
                         "speculativePathLength": 256
                     },
-                    "instShiftAmt": 0,
+                    "instShiftAmt": 2,
                     "numThreads": 1,
                     "ras": {
                         "type": "ReturnAddrStack",

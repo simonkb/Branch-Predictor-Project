@@ -41,7 +41,7 @@
                 "app_path": "/proc",
                 "eventq_index": 0,
                 "host_paths": [
-                    "results/tinymlp/BiModeBP/fs/proc"
+                    "results/matmul/TAGE/fs/proc"
                 ]
             },
             {
@@ -52,7 +52,7 @@
                 "app_path": "/sys",
                 "eventq_index": 0,
                 "host_paths": [
-                    "results/tinymlp/BiModeBP/fs/sys"
+                    "results/matmul/TAGE/fs/sys"
                 ]
             },
             {
@@ -63,7 +63,7 @@
                 "app_path": "/tmp",
                 "eventq_index": 0,
                 "host_paths": [
-                    "results/tinymlp/BiModeBP/fs/tmp"
+                    "results/matmul/TAGE/fs/tmp"
                 ]
             }
         ],
@@ -186,18 +186,59 @@
                         "tagBits": 16
                     },
                     "conditionalBranchPred": {
-                        "type": "BiModeBP",
-                        "cxx_class": "gem5::branch_prediction::BiModeBP",
+                        "type": "TAGE",
+                        "cxx_class": "gem5::branch_prediction::TAGE",
                         "name": "conditionalBranchPred",
                         "path": "system.cpu.branchPred.conditionalBranchPred",
-                        "choiceCtrBits": 2,
-                        "choicePredictorSize": 8192,
                         "eventq_index": 0,
-                        "globalCtrBits": 2,
-                        "globalPredictorSize": 8192,
                         "instShiftAmt": 0,
                         "numThreads": 1,
-                        "speculativeHistUpdate": true
+                        "speculativeHistUpdate": true,
+                        "tage": {
+                            "type": "TAGEBase",
+                            "cxx_class": "gem5::branch_prediction::TAGEBase",
+                            "name": "tage",
+                            "path": "system.cpu.branchPred.conditionalBranchPred.tage",
+                            "eventq_index": 0,
+                            "histBufferSize": 2097152,
+                            "initialTCounterValue": 131072,
+                            "instShiftAmt": 0,
+                            "logRatioBiModalHystEntries": 2,
+                            "logTagTableSizes": [
+                                13,
+                                9,
+                                9,
+                                9,
+                                9,
+                                9,
+                                9,
+                                9
+                            ],
+                            "logUResetPeriod": 18,
+                            "maxHist": 130,
+                            "maxNumAlloc": 1,
+                            "minHist": 5,
+                            "nHistoryTables": 7,
+                            "noSkip": [],
+                            "numThreads": 1,
+                            "numUseAltOnNa": 1,
+                            "pathHistBits": 16,
+                            "speculativeHistUpdate": true,
+                            "tagTableCounterBits": 3,
+                            "tagTableTagWidths": [
+                                0,
+                                9,
+                                9,
+                                10,
+                                10,
+                                11,
+                                11,
+                                12
+                            ],
+                            "tagTableUBits": 2,
+                            "takenOnlyHistory": false,
+                            "useAltOnNaBits": 4
+                        }
                     },
                     "eventq_index": 0,
                     "indirectBranchPred": {
@@ -1701,7 +1742,7 @@
                         "name": "workload",
                         "path": "system.cpu.workload",
                         "cmd": [
-                            "./benchmarks/tinymlp/tinymlp_rv_static"
+                            "./benchmarks/matmul/matmul_rv_static"
                         ],
                         "cwd": "/home/winner/Branch-Predictor-Project",
                         "drivers": [],
@@ -1710,7 +1751,7 @@
                         "errout": "cerr",
                         "euid": 100,
                         "eventq_index": 0,
-                        "executable": "./benchmarks/tinymlp/tinymlp_rv_static",
+                        "executable": "./benchmarks/matmul/matmul_rv_static",
                         "gid": 1000,
                         "input": "cin",
                         "kvmInSE": false,

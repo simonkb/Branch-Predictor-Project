@@ -41,7 +41,7 @@
                 "app_path": "/proc",
                 "eventq_index": 0,
                 "host_paths": [
-                    "results/tinymlp/BiModeBP/fs/proc"
+                    "results/matmul/BiModeBP/fs/proc"
                 ]
             },
             {
@@ -52,7 +52,7 @@
                 "app_path": "/sys",
                 "eventq_index": 0,
                 "host_paths": [
-                    "results/tinymlp/BiModeBP/fs/sys"
+                    "results/matmul/BiModeBP/fs/sys"
                 ]
             },
             {
@@ -63,7 +63,7 @@
                 "app_path": "/tmp",
                 "eventq_index": 0,
                 "host_paths": [
-                    "results/tinymlp/BiModeBP/fs/tmp"
+                    "results/matmul/BiModeBP/fs/tmp"
                 ]
             }
         ],
@@ -1701,7 +1701,7 @@
                         "name": "workload",
                         "path": "system.cpu.workload",
                         "cmd": [
-                            "./benchmarks/tinymlp/tinymlp_rv_static"
+                            "./benchmarks/matmul/matmul_rv_static"
                         ],
                         "cwd": "/home/winner/Branch-Predictor-Project",
                         "drivers": [],
@@ -1710,7 +1710,7 @@
                         "errout": "cerr",
                         "euid": 100,
                         "eventq_index": 0,
-                        "executable": "./benchmarks/tinymlp/tinymlp_rv_static",
+                        "executable": "./benchmarks/matmul/matmul_rv_static",
                         "gid": 1000,
                         "input": "cin",
                         "kvmInSE": false,
