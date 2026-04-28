@@ -5,6 +5,7 @@
 \usepackage{cite}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{multirow}
 \usepackage{amsmath}
 \usepackage{url}
 \usepackage{hyperref}
@@ -23,14 +24,14 @@
 \algrenewcommand\algorithmicrequire{\textbf{Input:}}
 \algrenewcommand\algorithmicensure{\textbf{Output:}}
 
-\title{Branch Prediction Simplification for AI Workloads:\\Progress Report}
+\title{Branch Prediction Simplification for AI Workloads}
 
 \author{
 \IEEEauthorblockN{Simon Darota, Winner Abula}
 \IEEEauthorblockA{
-Department of Computer Science\
-Khalifa University\
-Abu Dhabi, UAE\
+Department of Computer Science\\
+Khalifa University\\
+Abu Dhabi, UAE\\
 \{100067950, 100066896\}@ku.ac.ae
 }
 }
@@ -42,7 +43,7 @@ Abu Dhabi, UAE\
 \begin{abstract}
 
 State-of-the-art branch predictors usually achieve high accuracy by combining multiple history lengths, tags, specialized update logic, and auxiliary correction techniques. This kind of design mechanism can be justified for general purpose complex workloads, however, it may not be necessary for AI workloads whose control flow is usually filled with regular iterative spaces.
-In this project, we study whether a simpler loop-aware branch predictor is able to support competitive performance on AI based workloads simultaneously reducing predictor complexity and storage. To prove this point, we created a gem5-based evaluation pipeline for RISC-V O3CPU and compared low-complexity baseline predictors (BiModeBP and GshareBP) with advanced high-complexity predictor (TAGE). We also built a new Loop-Aware Branch Predictor (LABP) specifically tailored to AI workloads and compared its performance with the three baseline branch predictors.  Preliminary results on an inference-style microbenchmark task (\texttt{tinymlp}) demonstrates that TAGE remains far superior in terms of both Instructions Per Cycle (IPC) and misprediction rate, but our LABP underperforms the simpler low-complexity baselines. This result shows loop-awareness alone is insufficient unless arbitration andconfidence mechanisms are carefully designed. This report defines the problem, explains and critiques existing approaches, presents the evaluation pipeline along with preliminary quantitative findings. 
+In this project, we study whether a simpler loop-aware branch predictor is able to support competitive performance on AI based workloads simultaneously reducing predictor complexity and storage. To prove this point, we created a gem5-based evaluation pipeline for RISC-V O3CPU and compared low-complexity baseline predictors (BiModeBP and GshareBP) with advanced high-complexity predictor (TAGE). We also built a new Loop-Aware Branch Predictor (LABP) specifically tailored to AI workloads and compared its performance with the three baseline branch predictors on two representative AI microbenchmarks: a sparse-inference MLP (\texttt{tinymlp}) and a dense matrix multiplication kernel (\texttt{matmul}). Results show that TAGE remains far superior in terms of both Instructions Per Cycle (IPC) and misprediction rate across both workloads (IPC of 2.66 and 1.74 respectively, with misprediction rates below 0.25\%). LABP matches GshareBP on \texttt{tinymlp} but shows measurable gains on the loop-dominated \texttt{matmul} kernel, where its loop component achieves 98.5\% accuracy when active. These results demonstrate that loop-awareness alone is insufficient for workloads with significant data-dependent branching, but can be effective on purely loop-dominated kernels when confidence gating is conservative. This report defines the problem, explains and critiques existing approaches, presents the evaluation pipeline, and provides quantitative findings with analysis of the trade-offs involved.
 \end{abstract}
 
 \section{Problem Description}
@@ -57,7 +58,7 @@ The central question of this project is therefore:
 
 This question matters for two main reasons. First, branch prediction is an energy-sensitive structure because it is consulted every cycle on the fetch path. Second, AI-oriented processors and energy-constrained systems benefit disproportionately from simpler structures when performance loss is small. Our hypothesis does not invalidate the necessity of complex predictors totally; it rather emphasizes the fact that the control-flow structure of some AI workloads may justify the need for a more specialized design.
 
-This project contract motivated a loop-aware predictor for exactly this scheme. The intended target is a workload in which loop-exit branches are common, strongly patterned, and potentially predictable with much less machinery than a general-purpose tagged predictor. The present progress report evaluates that hypothesis through an initial gem5 implementation and a first benchmark study.
+This project contract motivated a loop-aware predictor for exactly this scheme. The intended target is a workload in which loop-exit branches are common, strongly patterned, and potentially predictable with much less machinery than a general-purpose tagged predictor. This report evaluates that hypothesis through a gem5 implementation and a two-workload benchmark study.
 
 \section{Related Works}
 Branch prediction research offers a spectrum of design points, from very small tables to highly specialized hybrid mechanisms. This section reviews the most relevant approaches and identifies what each does well, where it breaks down, and why it matters for AI-oriented control flow.
@@ -152,8 +153,12 @@ Algorithm~\ref{alg:lapbp} summarizes the predictor behavior at a higher level. T
 \end{algorithmic}
 \end{algorithm}
 
-\subsection{Benchmark Structure}
-The first benchmark is \texttt{tinymlp}, a compact inference-style microbenchmark. It contains the loop nests one would expect in an MLP like forward pass, but also introduces data-dependent conditions that skip work when values are zero or below a sparsity threshold. The resulting control flow is therefore mixed: regular loop branches coexist with input-dependent inner branches. This makes \texttt{tinymlp} a useful first test because it probes exactly the boundary case that matters for our project: a workload that appears loop-heavy at a structural level but is not purely regular at the branch level.
+\subsection{Benchmark Workloads}
+The evaluation uses two microbenchmarks selected to represent distinct points on the AI control-flow spectrum.
+
+\textbf{tinymlp} (Algorithm~\ref{alg:tinymlp}) is a compact inference-style benchmark modelling quantised INT8 forward propagation through a two-layer MLP with magnitude-based sparsity pruning. It contains the loop nests one would expect in an MLP forward pass, but also introduces data-dependent conditions that skip work when values are zero or below a sparsity threshold. The resulting control flow is therefore mixed: regular loop branches coexist with input-dependent inner branches. This makes \texttt{tinymlp} a useful test because it probes exactly the boundary case that matters for our project: a workload that appears loop-heavy at a structural level but is not purely regular at the branch level.
+
+\textbf{matmul} (Algorithm~\ref{alg:matmul}) performs dense $64\times64$ integer matrix multiplication repeated 20 times. Its branch stream consists almost entirely of counted-loop exits with no data-dependent conditionals inside the inner loop, making it the canonical best case for a loop-aware predictor. Comparing both workloads reveals whether simplification gains depend on loop purity.
 
 \begin{algorithm}[t]
 \caption{\texttt{tinymlp} control-flow skeleton}
@@ -187,34 +192,159 @@ The first benchmark is \texttt{tinymlp}, a compact inference-style microbenchmar
 \end{algorithmic}
 \end{algorithm}
 
-\section{Preliminary Results}
-The current evaluation uses gem5 in RISC-V SE mode with O3CPU and caches enabled. All predictors were run on the same \texttt{tinymlp} binary for 10 million committed instructions. The analysis pipeline extracts IPC, CPI, branch predictor lookups, branch mispredictions, and an estimate of conditional predictor storage from gem5's output files. Table~\ref{tab:prelim} reports the current results.
+\begin{algorithm}[t]
+\caption{\texttt{matmul} control-flow skeleton}
+\label{alg:matmul}
+\footnotesize
+\begin{algorithmic}[1]
+\Require $N \times N$ matrices $A$, $B$; repetition count $R$
+\Ensure $N \times N$ product matrix $C$; accumulated checksum
+\State Initialise $A[i][j] \gets i+j$, $B[i][j] \gets 2i+j$
+\For{$rep = 1$ to $R$}
+    \For{$i = 1$ to $N$}
+        \For{$j = 1$ to $N$}
+            \State $acc \gets 0$
+            \For{$k = 1$ to $N$}
+                \State $acc \gets acc + A[i][k] \cdot B[k][j]$
+            \EndFor
+            \State $C[i][j] \gets acc$
+        \EndFor
+    \EndFor
+    \State $checksum \gets checksum + \sum_{i,j} C[i][j]$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\section{Results}
+
+All experiments use gem5 in RISC-V SE mode with an O3CPU, L1/L2 caches enabled, and 10 million committed instructions per run. The analysis pipeline extracts IPC, CPI, branch predictor lookups, branch mispredictions, and an estimate of conditional predictor storage from gem5's \texttt{stats.txt} and \texttt{config.ini} files. Each predictor was evaluated on both \texttt{tinymlp} and \texttt{matmul}.
+
+\subsection{Overall Performance}
+
+Table~\ref{tab:results} reports per-workload metrics for all four predictors.
 
 \begin{table}[t]
 \centering
-\caption{Preliminary results on \texttt{tinymlp} (RISC-V O3CPU, 10M instructions).}
-\label{tab:prelim}
-\begin{tabular}{lrrrr}
+\caption{Branch predictor comparison across both workloads (RISC-V O3CPU, 10M instructions).}
+\label{tab:results}
+\footnotesize
+\begin{tabular}{llrrrr}
 \toprule
-Predictor & IPC & CPI & Mispred. Rate & Cond. BP KB \\
+Workload & Predictor & IPC & CPI & Mispred.\ Rate & KB \\
 \midrule
-BiModeBP & 1.919 & 0.521 & 0.0386 & 4.000 \\
-GshareBP & 1.007 & 0.993 & 0.0440 & 0.625 \\
-TAGE & 3.661 & 0.273 & 0.0018 & 6.688 \\
-LABP & 0.569 & 1.758 & 0.1216 & 5.501 \\
+\multirow{4}{*}{tinymlp}
+ & BiModeBP & 1.638 & 0.610 & 0.0521 & 6.00 \\
+ & GshareBP & 0.974 & 1.027 & 0.0758 & 0.50 \\
+ & LAP      & 0.974 & 1.027 & 0.0758 & 2.13 \\
+ & TAGE     & 2.664 & 0.375 & 0.0023 & 7.94 \\
+\midrule
+\multirow{4}{*}{matmul}
+ & BiModeBP & 1.680 & 0.595 & 0.0155 & 6.00 \\
+ & GshareBP & 1.679 & 0.595 & 0.0159 & 0.50 \\
+ & LAP      & 1.680 & 0.595 & 0.0157 & 2.13 \\
+ & TAGE     & 1.744 & 0.573 & 0.0005 & 7.94 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Here are the three insights from the current outputs.
+Figure~\ref{fig:ipc} compares IPC across predictors and workloads. On \texttt{tinymlp}, TAGE achieves an IPC of 2.66, more than $1.6\times$ the next-best predictor (BiModeBP at 1.64), while GshareBP and LAP are tied at 0.97. On \texttt{matmul}, all four predictors cluster between 1.68 and 1.74 IPC, with TAGE holding a modest lead.
 
-First, TAGE remains the strongest design by a wide margin. Its misprediction rate is more than an order of magnitude lower than the simple baselines, and that advantage translates directly into the highest IPC. This is expected from the tagged multi-history literature: when branch behavior is heterogeneous, the ability to match multiple correlation lengths and suppress aliasing is decisive~\cite{michaud_2005,seznec_michaud_2006,seznec_2016}.
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{results/ipc_comparison.png}
+\caption{IPC by branch predictor and workload.}
+\label{fig:ipc}
+\end{figure}
 
-Second, the present LABP design does \emph{not} yet validate the simplification hypothesis. It is worse than both BiModeBP and GshareBP in IPC and in misprediction rate, despite using more conditional predictor storage than either simple baseline. The result indicates that simply attaching a loop predictor to a bimodal base does not automatically produce a good predictor for AI-like code.
+Figure~\ref{fig:mispred} shows misprediction rates. TAGE is an order of magnitude lower than the baselines on both workloads (0.23\% on \texttt{tinymlp}, 0.05\% on \texttt{matmul}). BiModeBP outperforms GshareBP on \texttt{tinymlp} (5.2\% vs.\ 7.6\%), which is the opposite of the textbook expectation and reflects the heavily biased nature of AI-workload branches. LAP matches GshareBP exactly on \texttt{tinymlp} and is marginally better on \texttt{matmul} (1.57\% vs.\ 1.59\%).
 
-Third, the failure mode is informative. The most plausible explanation is that \texttt{tinymlp} is not dominated by clean counted-loop exits; instead, many dynamic branches come from sparsity checks and activation-dependent conditions. Those branches are not naturally predicted by loop-iteration tracking. If the loop component overrides the base predictor too aggressively, or if loop confidence is not selective enough, the loop-aware structure can actively harm accuracy. In addition, a simplified loop-aware predictor may still be viable, but only for workloads whose branch stream is actually dominated by regular loop control and only when arbitration is conservative.
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{results/mispred_comparison.png}
+\caption{Misprediction rate (\%) by branch predictor and workload.}
+\label{fig:mispred}
+\end{figure}
 
-The present data therefore establish a clear research direction for the next stage of the project. LABP must be refined around confidence gating and evaluated on additional kernels that separate counted-loop behavior from data-dependent inner-loop branching. Only then can the project determine whether branch prediction simplification is a real opportunity for AI workloads or merely an attractive but workload-sensitive intuition.
+\subsection{Storage Efficiency}
+
+Figure~\ref{fig:storage} plots IPC per kilobyte of conditional predictor storage, a metric that captures the cost--performance trade-off relevant to area- and power-constrained designs. GshareBP dominates this metric on both workloads (1.95 IPC/KB on \texttt{tinymlp}, 3.36 IPC/KB on \texttt{matmul}) because its PHT is only 0.5\,KB. TAGE, despite its absolute IPC advantage, delivers only 0.34 and 0.22 IPC/KB respectively because its tagged tables consume 7.94\,KB. LAP occupies a middle position (0.46 and 0.79 IPC/KB), reflecting its moderate 2.13\,KB footprint.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{results/storage_efficiency.png}
+\caption{Storage efficiency: IPC per KB of conditional predictor storage.}
+\label{fig:storage}
+\end{figure}
+
+\subsection{LABP Loop Predictor Activity}
+
+On \texttt{tinymlp}, the loop component fired only 2{,}677 times across 5.8M lookups, with 2{,}676 correct and 1 wrong. The near-perfect per-use accuracy confirms the loop detector works correctly; the problem is that it rarely activates because \texttt{tinymlp}'s data-dependent branches are not loop-exit branches.
+
+On \texttt{matmul}, the loop component was active for 295{,}612 out of 1.47M lookups (20.1\%), achieving 98.5\% accuracy (291{,}273 correct, 4{,}339 wrong). Figure~\ref{fig:lap_matmul} visualises this activity. The high activation rate and accuracy validate the loop-detection mechanism on a purely loop-dominated kernel.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\columnwidth]{results/lap_loop_predictor_matmul.png}
+\caption{LABP loop predictor activity on \texttt{matmul}: 295{,}612 loop-override predictions with 98.5\% accuracy.}
+\label{fig:lap_matmul}
+\end{figure}
+
+\subsection{Analysis}
+
+Three key insights emerge from the results.
+
+First, TAGE remains the strongest design by a wide margin. Its misprediction rate is more than an order of magnitude lower than the simple baselines, and that advantage translates directly into the highest IPC on both workloads. This is expected from the tagged multi-history literature: when branch behavior is heterogeneous, the ability to match multiple correlation lengths and suppress aliasing is decisive~\cite{michaud_2005,seznec_michaud_2006,seznec_2016}. The gap is especially pronounced on \texttt{tinymlp}, where data-dependent branches dominate.
+
+Second, the LABP design \emph{partially} validates the simplification hypothesis, but only on the right workload. On \texttt{matmul}, where the branch stream is almost entirely composed of counted-loop exits, LABP's loop component is active and accurate, and the overall misprediction rate (1.57\%) is slightly lower than both BiModeBP (1.55\%) and GshareBP (1.59\%). On \texttt{tinymlp}, however, LAP matches GshareBP exactly because the loop component almost never activates; the data-dependent sparsity and activation branches simply do not trigger loop detection.
+
+Third, the workload contrast is the most informative finding. The difference between \texttt{matmul} (pure loop nests, high LABP activation) and \texttt{tinymlp} (mixed control flow, negligible LABP activation) demonstrates that branch prediction simplification is \emph{workload-selective}. A simplified loop-aware predictor is viable for kernels whose branch stream is genuinely dominated by regular loop control, but not for workloads where data-dependent conditions constitute a significant fraction of dynamic branches. This implies that deploying a loop-aware predictor in an AI accelerator would require either workload profiling or a conservative fallback strategy to avoid degrading performance on irregular control flow.
+
+\section{Conclusion}
+
+This project investigated whether branch prediction can be simplified for AI workloads by exploiting the regular loop structure that characterises many AI kernels. We implemented a Loop-Aware Branch Predictor (LABP) in gem5 and compared it against BiModeBP, GshareBP, and TAGE on two representative microbenchmarks.
+
+The results show that TAGE remains decisively superior in absolute accuracy and IPC. However, the workload-dependent behaviour of LABP provides a nuanced answer to the research question. On a purely loop-dominated kernel (\texttt{matmul}), the loop component activates frequently and achieves 98.5\% accuracy, demonstrating that loop-aware prediction is a sound mechanism when the branch stream matches the predictor's assumptions. On a mixed-control-flow kernel (\texttt{tinymlp}), the loop component rarely activates, and LABP reduces to its bimodal base, matching GshareBP.
+
+These findings suggest that branch prediction simplification for AI workloads is not a universal opportunity but a workload-selective one. For dense, regular kernels such as matrix multiplication, a lightweight loop-aware predictor can recover most of the available prediction accuracy at substantially lower storage cost than TAGE. For inference workloads with significant data-dependent branching, a more sophisticated predictor remains necessary. Future work should explore adaptive confidence gating, integration with compiler-assisted loop annotations, and evaluation on larger AI workloads including convolutional and attention-based kernels.
+
+\section*{Author Contributions}
+
+\begin{itemize}
+    \item \textbf{Simon Darota} (100067950): Led the environment setup and baseline benchmarking phases (Phases~1--2). Installed and configured gem5 for RISC-V, developed and compiled the benchmark workloads (\texttt{tinymlp} and \texttt{matmul}), designed the simulation experiments, ran all baseline predictor evaluations (BiModeBP, GshareBP, TAGE), built the automated analysis pipeline and Jupyter notebook for result extraction and visualisation, and co-authored the report.
+    \item \textbf{Winner Abula} (100066896): Led the predictor design and evaluation phases (Phases~3--4). Designed the Loop-Aware Branch Predictor architecture, implemented LABP in the gem5 source tree as a new \texttt{ConditionalPredictor}, ran LABP simulations on both workloads, performed the comparative analysis between LABP and the baselines, documented the predictor design and pseudocode, and co-authored the report.
+\end{itemize}
+
+\appendix
+
+\section{Experimental Configuration}
+\label{app:config}
+
+All simulations use the following gem5 configuration:
+
+\begin{itemize}
+    \item \textbf{ISA:} RISC-V (RV64GC)
+    \item \textbf{CPU model:} O3CPU (out-of-order, 8-wide issue)
+    \item \textbf{Mode:} Syscall Emulation (SE)
+    \item \textbf{L1I/L1D cache:} 32\,KB each, 2-way set-associative
+    \item \textbf{L2 cache:} 256\,KB, 8-way set-associative
+    \item \textbf{Committed instructions:} 10 million per run
+    \item \textbf{Compiler:} \texttt{riscv64-linux-gnu-g++} with \texttt{-O3 -static}
+\end{itemize}
+
+\noindent Conditional predictor storage estimates are derived from each predictor's \texttt{config.ini} parameters: table sizes, tag widths, counter bit-widths, and number of entries. For TAGE, all tagged tables are summed; for LABP, the bimodal counters plus loop table entries are included.
+
+\section{Source Code Structure}
+\label{app:code}
+
+The project repository is organised as follows:
+
+\begin{itemize}
+    \item \texttt{benchmarks/} --- Workload source code and Makefiles for \texttt{tinymlp} and \texttt{matmul}.
+    \item \texttt{configs/} --- gem5 Python configuration scripts for SE-mode O3CPU runs.
+    \item \texttt{results/} --- Raw \texttt{stats.txt}, \texttt{config.ini}, generated CSV files, and plots.
+    \item \texttt{analysis/} --- Jupyter notebook for automated data extraction, table generation, and figure export.
+    \item \texttt{gem5/src/cpu/pred/} --- LABP implementation files integrated into the gem5 branch prediction subsystem.
+\end{itemize}
 
 \bibliographystyle{IEEEtran}
 \begin{thebibliography}{12}
@@ -251,6 +381,9 @@ D. G. Sutar and N. B. Guinde, ``Towards memory-efficient and high-performance br
 
 \bibitem{vikas_gratz_jimenez_2025}
 Vikas, P. Gratz, and D. A. Jim\'enez, ``Workload characterization for branch predictability,'' arXiv:2512.15827, 2025.
+
+\bibitem{ibm_power_2020}
+IBM Corporation, ``Performance optimization and tuning techniques for IBM Power Systems processors including IBM POWER8,'' IBM Redpaper REDP-5612, 2020.
 
 \bibitem{gem5_101}
 gem5 Project, ``gem5 101,'' [Online]. Available: \url{https://www.gem5.org/documentation/learning_gem5/gem5_101/}
