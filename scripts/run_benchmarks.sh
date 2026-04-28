@@ -13,6 +13,7 @@ PREDICTORS=(
   "BiModeBP"
   "GshareBP"
   "TAGE"
+  "LAP"
 )
 
 WORKLOADS=(

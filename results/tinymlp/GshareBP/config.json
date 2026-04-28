@@ -41,7 +41,7 @@
                 "app_path": "/proc",
                 "eventq_index": 0,
                 "host_paths": [
-                    "results/tinymlp/GshareBP/fs/proc"
+                    "/home/lp100067950/Downloads/Branch-Predictor-Project/results/tinymlp/GshareBP/fs/proc"
                 ]
             },
             {
@@ -52,7 +52,7 @@
                 "app_path": "/sys",
                 "eventq_index": 0,
                 "host_paths": [
-                    "results/tinymlp/GshareBP/fs/sys"
+                    "/home/lp100067950/Downloads/Branch-Predictor-Project/results/tinymlp/GshareBP/fs/sys"
                 ]
             },
             {
@@ -63,7 +63,7 @@
                 "app_path": "/tmp",
                 "eventq_index": 0,
                 "host_paths": [
-                    "results/tinymlp/GshareBP/fs/tmp"
+                    "/home/lp100067950/Downloads/Branch-Predictor-Project/results/tinymlp/GshareBP/fs/tmp"
                 ]
             }
         ],
@@ -154,7 +154,7 @@
                             "eventq_index": 0,
                             "numThreads": 1,
                             "num_entries": 4096,
-                            "set_shift": 0,
+                            "set_shift": 2,
                             "tag_bits": 16
                         },
                         "btbReplPolicy": {
@@ -166,7 +166,7 @@
                         },
                         "clk_domain": "system.cpu_clk_domain",
                         "eventq_index": 0,
-                        "instShiftAmt": 0,
+                        "instShiftAmt": 2,
                         "numEntries": 4096,
                         "numThreads": 1,
                         "power_model": [],
@@ -191,7 +191,7 @@
                         "name": "conditionalBranchPred",
                         "path": "system.cpu.branchPred.conditionalBranchPred",
                         "eventq_index": 0,
-                        "instShiftAmt": 0,
+                        "instShiftAmt": 2,
                         "localCtrBits": 2,
                         "localPredictorSize": 2048,
                         "numThreads": 1,
@@ -199,7 +199,7 @@
                     },
                     "eventq_index": 0,
                     "global_counter_bits": 2,
-                    "global_predictor_size": 512,
+                    "global_predictor_size": 4096,
                     "indirectBranchPred": {
                         "type": "SimpleIndirectPredictor",
                         "cxx_class": "gem5::branch_prediction::SimpleIndirectPredictor",
@@ -213,11 +213,11 @@
                         "indirectSets": 256,
                         "indirectTagSize": 16,
                         "indirectWays": 2,
-                        "instShiftAmt": 0,
+                        "instShiftAmt": 2,
                         "numThreads": 1,
                         "speculativePathLength": 256
                     },
-                    "instShiftAmt": 0,
+                    "instShiftAmt": 2,
                     "numThreads": 1,
                     "ras": {
                         "type": "ReturnAddrStack",
@@ -1701,16 +1701,16 @@
                         "name": "workload",
                         "path": "system.cpu.workload",
                         "cmd": [
-                            "./benchmarks/tinymlp/tinymlp_rv_static"
+                            "/home/lp100067950/Downloads/Branch-Predictor-Project/benchmarks/tinymlp/tinymlp_rv_static"
                         ],
-                        "cwd": "/home/winner/Branch-Predictor-Project",
+                        "cwd": "/home/lp100067950/Downloads/Branch-Predictor-Project",
                         "drivers": [],
                         "egid": 100,
                         "env": [],
                         "errout": "cerr",
                         "euid": 100,
                         "eventq_index": 0,
-                        "executable": "./benchmarks/tinymlp/tinymlp_rv_static",
+                        "executable": "/home/lp100067950/Downloads/Branch-Predictor-Project/benchmarks/tinymlp/tinymlp_rv_static",
                         "gid": 1000,
                         "input": "cin",
                         "kvmInSE": false,

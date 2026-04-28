@@ -209,6 +209,7 @@ def attach_branch_predictor(cpu, bp_name: str):
         bpu = BP_CLASSES["GshareBP"]()
         if "LocalBP" not in BP_CLASSES:
             fatal("GshareBP requires LocalBP but LocalBP was not found in this build.")
+        bpu.instShiftAmt = 2  # RISC-V 4-byte alignment
         bpu.conditionalBranchPred = BP_CLASSES["LocalBP"]()
         cpu.branchPred = bpu
         return
@@ -216,6 +217,7 @@ def attach_branch_predictor(cpu, bp_name: str):
     # Case 3: Everything else here is a ConditionalPredictor -> wrap it
     cond = BP_CLASSES[bp_name]()  # e.g., BiModeBP(), TournamentBP(), TAGE(), ...
     bpu = BranchPredictor()
+    bpu.instShiftAmt = 2  # RISC-V 4-byte alignment
     bpu.conditionalBranchPred = cond
     cpu.branchPred = bpu
     
