@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -A10 \"^\\\\[system.cpu.branchPred\\\\]$\" c:/PhD/CompArchProj/Branch-Predictor-Project/results/matmul/GshareBP/config.ini)",
+      "Bash(grep -A10 \"^\\\\[system.cpu.branchPred.conditionalBranchPred\\\\]$\" c:/PhD/CompArchProj/Branch-Predictor-Project/results/matmul/GshareBP/config.ini)",
+      "Bash(grep -A5 \"^\\\\[system.cpu.branchPred.conditionalBranchPred.tage\\\\]$\" c:/PhD/CompArchProj/Branch-Predictor-Project/results/matmul/TAGE/config.ini)"
+    ]
+  }
+}

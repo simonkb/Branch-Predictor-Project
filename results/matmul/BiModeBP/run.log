@@ -1,0 +1,24 @@
+warn: Project script based on deprecated se.py style. This project-owned copy extends --bp-type support for branch predictors.
+Global frequency set at 1000000000000 ticks per second
+warn: No dot file generated. Please install pydot to generate the dot file and pdf.
+src/mem/dram_interface.cc:690: warn: DRAM device capacity (8192 Mbytes) does not match the address range assigned (512 Mbytes)
+src/arch/riscv/isa.cc:321: info: RVV enabled, VLEN = 256 bits, ELEN = 64 bits
+src/base/statistics.hh:279: warn: One of the stats is a legacy stat. Legacy stat is a stat that does not belong to any statistics::Group. Legacy stat is deprecated.
+src/base/stats/storage.hh:278: warn: Bucket size (4) does not divide range [1:32] into equal-sized buckets. Rounding up.
+src/base/stats/storage.hh:278: warn: Bucket size (4) does not divide range [1:8] into equal-sized buckets. Rounding up.
+system.remote_gdb: Listening for connections on port 7000
+gem5 Simulator System.  https://www.gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 version 25.1.0.0
+gem5 compiled Apr 28 2026 20:10:29
+gem5 started Apr 28 2026 20:52:23
+gem5 executing on lp100067950-Latitude-5440, pid 42376
+command line: /home/lp100067950/Downloads/Branch-Predictor-Project/gem5/build/RISCV/gem5.opt --outdir=/home/lp100067950/Downloads/Branch-Predictor-Project/results/matmul/BiModeBP /home/lp100067950/Downloads/Branch-Predictor-Project/configs/se_riscv_bp.py --cmd=/home/lp100067950/Downloads/Branch-Predictor-Project/benchmarks/matmul/matmul_rv_static --cpu-type=O3CPU --bp-type=BiModeBP --caches --l2cache -I 10000000
+
+**** REAL SIMULATION ****
+src/sim/syscall_emul.cc:97: warn: ignoring syscall set_robust_list(...)
+      (further warnings will be suppressed)
+src/sim/mem_state.cc:443: info: Increasing stack size by one page.
+src/sim/syscall_emul.cc:86: warn: ignoring syscall mprotect(...)
+Exiting @ tick 2976967000 because a thread reached the max instruction count

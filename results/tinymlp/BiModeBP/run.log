@@ -11,9 +11,9 @@ gem5 Simulator System.  https://www.gem5.org
 gem5 is copyrighted software; use the --copyright option for details.
 
 gem5 version 25.1.0.0
-gem5 compiled Mar  8 2026 14:02:22
-gem5 started Mar  8 2026 21:51:31
-gem5 executing on lp100067950-Latitude-5440, pid 148326
+gem5 compiled Apr 28 2026 20:10:29
+gem5 started Apr 28 2026 20:49:42
+gem5 executing on lp100067950-Latitude-5440, pid 42041
 command line: /home/lp100067950/Downloads/Branch-Predictor-Project/gem5/build/RISCV/gem5.opt --outdir=/home/lp100067950/Downloads/Branch-Predictor-Project/results/tinymlp/BiModeBP /home/lp100067950/Downloads/Branch-Predictor-Project/configs/se_riscv_bp.py --cmd=/home/lp100067950/Downloads/Branch-Predictor-Project/benchmarks/tinymlp/tinymlp_rv_static --cpu-type=O3CPU --bp-type=BiModeBP --caches --l2cache -I 10000000
 
 **** REAL SIMULATION ****
@@ -21,4 +21,4 @@ src/sim/syscall_emul.cc:97: warn: ignoring syscall set_robust_list(...)
       (further warnings will be suppressed)
 src/sim/mem_state.cc:443: info: Increasing stack size by one page.
 src/sim/syscall_emul.cc:86: warn: ignoring syscall mprotect(...)
-Exiting @ tick 2605223500 because a thread reached the max instruction count
+Exiting @ tick 3052400000 because a thread reached the max instruction count

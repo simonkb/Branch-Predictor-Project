@@ -13,10 +13,12 @@ PREDICTORS=(
   "BiModeBP"
   "GshareBP"
   "TAGE"
+  "LAP"
 )
 
 WORKLOADS=(
   "tinymlp:$ROOT/benchmarks/tinymlp/tinymlp_rv_static"
+  "matmul:$ROOT/benchmarks/matmul/matmul_rv_static"
 )
 
 CPU_TYPE="O3CPU"
